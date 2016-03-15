@@ -1,14 +1,18 @@
-ACCESS_TOKEN = 'CAACEdEose0cBAGWtedQJTDnVLWrxeCc9OpHrLb0ra4sbiiLQueqVCGuCXeAkHd5zkfZC6MU5Sy6CKEpCUIvUnv7fOmma3ZBpcCRUdqhJgvffQ2tJbZCObuX74NEHZBW7Q1y8Ex6SEive5EJ0SElqM2SrbgVhaXFQmfZCZBaL519CZB9wirZCNoYYVu8ppjHi48uczKqNZByjr3gZDZD'
+ACCESS_TOKEN = 'CAACEdEose0cBACZCdzTGKps1XMop5Dapv7ZCeOcP2kCr9PInadlAB6wNzZB4RcA6eQJesZAdumdEZCIcKg4gMUYAlZBTfQj2fsQ1GhLbKN1WJN5DZCKP2TdBAme46UvVzZAKCkgO0S48qFHLMnoLZAy9EQY4NCI1QjTgAY3eC1c5LmFaZB0AnA7DJFSJOroH8HB0IPZC0xOCrAkDwZDZD'
 
 class AutoPost
+  @graph = Koala::Facebook::API.new(ACCESS_TOKEN)
   class << self
 
     def publish(item)
-      @graph = Koala::Facebook::API.new(ACCESS_TOKEN)
-
       profile = @graph.get_object("me")
       @graph.put_connections("me", "feed", message: "#{item.title} #{item.link}")
     end
 
+    def publish_updates
+      range = Time.now - 6.hours
+      items = Medium.where('created_at > ?', range).all
+      items.each{ |item| publish(item) }
+    end
   end
 end
